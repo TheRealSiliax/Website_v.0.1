@@ -924,49 +924,49 @@
                 float fres = fresnel(viewDir, normal, 5.0) * 0.3;
                 waterColor = mix(waterColor, WATER_RIM * 1.2, fres);
                 
-                // === POINTER INTERACTION (SHIMMER) ===
+                // === POINTER INTERACTION (SHIMMER) - Soft & Warm ===
                 float pointerDist = length(uvAspect - pointer);
-                float pointerInfluence = smoothstep(0.35, 0.0, pointerDist) * u_pointerInfluence;
+                float pointerInfluence = smoothstep(0.45, 0.0, pointerDist) * u_pointerInfluence;
                 
-                // Shimmer boost near pointer
-                float shimmerBoost = 1.0 + pointerInfluence * 2.0;
+                // Gentler shimmer boost
+                float shimmerBoost = 1.0 + pointerInfluence * 0.6;
                 
-                // Micro-flicker effect
-                float flicker = 1.0 + sin(time * 6.0 + waveHeight * 20.0) * 0.15 * pointerInfluence;
+                // Subtle micro-flicker
+                float flicker = 1.0 + sin(time * 4.0 + waveHeight * 15.0) * 0.05 * pointerInfluence;
                 
-                // Sparkle on wave crests near pointer
-                float sparkle = smoothstep(0.5, 0.85, waveHeight) * pointerInfluence;
+                // Sparkle on wave crests - more subtle
+                float sparkle = smoothstep(0.6, 0.9, waveHeight) * pointerInfluence * 0.4;
                 
-                // Light color for shimmer (soft cyan/white)
-                vec3 shimmerColor = vec3(0.6, 0.8, 1.0);
-                vec3 sparkleColor = vec3(0.8, 0.9, 1.0);
+                // Warm, soft light colors (golden amber tones)
+                vec3 shimmerColor = vec3(0.95, 0.75, 0.45);  // Warm golden
+                vec3 sparkleColor = vec3(1.0, 0.85, 0.6);    // Soft amber
                 
-                // Apply shimmer based on wave crests
-                float waveCrests = smoothstep(0.3, 0.7, waveHeight);
-                waterColor += shimmerColor * waveCrests * pointerInfluence * shimmerBoost * flicker * 0.5;
-                waterColor += sparkleColor * sparkle * flicker * 0.8;
+                // Apply shimmer based on wave crests - much softer
+                float waveCrests = smoothstep(0.35, 0.75, waveHeight);
+                waterColor += shimmerColor * waveCrests * pointerInfluence * shimmerBoost * flicker * 0.15;
+                waterColor += sparkleColor * sparkle * flicker * 0.25;
                 
-                // Outer glow around pointer
-                float outerGlow = smoothstep(0.5, 0.1, pointerDist) * u_pointerInfluence * 0.15;
-                waterColor += shimmerColor * outerGlow;
+                // Soft outer glow - very subtle warm light
+                float outerGlow = smoothstep(0.6, 0.15, pointerDist) * u_pointerInfluence * 0.06;
+                waterColor += shimmerColor * outerGlow * 0.5;
                 
                 vec3 sky = waterColor;
                 
                 // === POST PROCESSING ===
                 
-                // Vignette - subtle darkening at edges
-                float vig = vignette(uv, 0.35, 0.7);
+                // Vignette - gentle darkening at edges
+                float vig = vignette(uv, 0.25, 0.75);
                 sky *= vig;
                 
-                // Film grain - very subtle
-                float grain = filmGrain(uv, time) * 0.025;
+                // Film grain - barely noticeable
+                float grain = filmGrain(uv, time) * 0.015;
                 sky += grain;
                 
-                // Cheap bloom for shimmer highlights
-                sky = cheapBloom(sky, 0.5, 0.3);
+                // Subtle bloom for warm glow
+                sky = cheapBloom(sky, 0.6, 0.15);
                 
-                // Clamp highlights
-                sky = min(sky, vec3(0.95));
+                // Clamp highlights - keep it subtle
+                sky = min(sky, vec3(0.85));
                 
                 gl_FragColor = vec4(sky, 1.0);
             }
