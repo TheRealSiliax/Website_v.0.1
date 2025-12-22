@@ -903,20 +903,21 @@
                 
                 // === SKY GRADIENT ===
                 vec3 sky = mix(SKY_TOP, SKY_MID, smoothstep(1.0, 0.5, uv.y));
-                sky = mix(sky, SKY_HORIZON, smoothstep(0.55, HORIZON_LINE, uv.y));
+                sky = mix(sky, SKY_HORIZON, smoothstep(0.55, HORIZON_LINE - 0.02, uv.y));
                 
-                // Sun glow in sky
-                vec2 sunPos = vec2(0.62 * aspect, 0.44);
+                // Sun glow in sky - positioned slightly above horizon
+                vec2 sunPos = vec2(0.62 * aspect, HORIZON_LINE + 0.06);
                 float sunDist = length(uvAspect - sunPos);
-                float sunGlow = exp(-sunDist * 5.0) * 0.75;
+                float sunGlow = exp(-sunDist * 4.0) * 0.6;
                 sky += SUN_GLOW * sunGlow;
                 
-                // Sun core
-                float sunCore = smoothstep(0.08, 0.02, sunDist);
-                sky = mix(sky, SUN_CORE, sunCore * 0.8);
+                // Sun core - softer edge
+                float sunCore = smoothstep(0.1, 0.03, sunDist);
+                sky = mix(sky, SUN_CORE, sunCore * 0.7);
                 
                 // === WATER ===
-                float waterMask = smoothstep(HORIZON_LINE + 0.02, HORIZON_LINE - 0.02, uv.y);
+                // Softer horizon transition to avoid hard edge
+                float waterMask = smoothstep(HORIZON_LINE + 0.01, HORIZON_LINE - 0.08, uv.y);
                 
                 if (waterMask > 0.01) {
                     // Perspective distortion for water
@@ -937,17 +938,22 @@
                     vec3 waterColor = mix(WATER_DEEP, WATER_MID, perspective);
                     waterColor = mix(waterColor, WATER_RIM, waveHeight * 0.5);
                     
-                    // Fresnel effect
+                    // Fresnel effect - reduced near horizon for smoother blend
                     float fres = fresnel(viewDir, normal, 4.5) * 0.55;
-                    waterColor = mix(waterColor, SKY_HORIZON * 0.5, fres);
+                    float horizonBlend = smoothstep(HORIZON_LINE - 0.15, HORIZON_LINE - 0.02, uv.y);
+                    fres *= (1.0 - horizonBlend * 0.7);
+                    waterColor = mix(waterColor, SKY_HORIZON * 0.4, fres);
+                    
+                    // Blend water color towards sky color near horizon
+                    waterColor = mix(waterColor, SKY_HORIZON * 0.3, horizonBlend * 0.5);
                     
                     // Specular highlight (sun reflection)
                     float spec = blinnPhong(lightDir, viewDir, normal, 180.0);
                     
-                    // Sun reflection stretch along wave direction
-                    float reflectionStretch = 1.35;
-                    float fadeWithDist = 1.0 - uv.y * 1.1;
-                    spec *= fadeWithDist * reflectionStretch;
+                    // Sun reflection - fade near horizon to avoid white band
+                    float horizonFade = smoothstep(HORIZON_LINE - 0.05, HORIZON_LINE - 0.15, uv.y);
+                    float distanceFade = smoothstep(0.0, 0.3, HORIZON_LINE - uv.y);
+                    spec *= horizonFade * distanceFade * 1.2;
                     
                     // === POINTER INTERACTION (SHIMMER) ===
                     float pointerDist = length(uvAspect - pointer);
