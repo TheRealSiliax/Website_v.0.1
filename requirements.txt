@@ -1,0 +1,8 @@
+# Python Abhängigkeiten für das Projekt
+
+# GitHub Backup Script
+PyYAML>=6.0
+
+# PDF Text Extraction (falls benötigt)
+pdfminer.six>=20221105
+

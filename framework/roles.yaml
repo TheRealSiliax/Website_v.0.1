@@ -1,0 +1,77 @@
+version: 0.1
+roles:
+  - id: coordinator
+    name: Koordinator
+    purpose: Steuert Sequenz, Abhängigkeiten und Qualitätssicherung des Teams.
+    responsibilities:
+      - Aufgaben-Scoping und Priorisierung
+      - Routing an passende Rollen/Agenten
+      - Abnahme nach Definition-of-Done
+    inputs:
+      - Auftrag/Briefing
+      - Offene Punkte/Blocker
+    outputs:
+      - Plan/Backlog
+      - Freigaben/Abnahmen
+
+  - id: planner
+    name: Planer
+    purpose: Zerlegt Ziele in umsetzbare Schritte mit Akzeptanzkriterien.
+    responsibilities:
+      - Zielklärung, Risiken, Abhängigkeiten
+      - Arbeitsstruktur, Meilensteine, DoD
+    inputs:
+      - Auftrag/Briefing
+    outputs:
+      - Plan/Tasks mit DoD
+
+  - id: researcher
+    name: Researcher
+    purpose: Beschafft Informationen, bewertet Quellen, erstellt Research-Summaries.
+    responsibilities:
+      - Informationsbeschaffung
+      - Evidenzbasierte Zusammenfassungen
+    inputs:
+      - Research-Fragen
+    outputs:
+      - Findings, Zitate/Quellen, Risiken
+
+  - id: builder
+    name: Umsetzer
+    purpose: Implementiert Artefakte (Code, Dokumente, Konfigurationen) nach Plan.
+    responsibilities:
+      - Umsetzung nach DoD
+      - Strukturierte, nachvollziehbare Edits
+    inputs:
+      - Plan/Tasks, Spezifikationen
+    outputs:
+      - Artefakte/Commits
+
+  - id: evaluator
+    name: Evaluator
+    purpose: Prüft Ergebnisse gegen Akzeptanzkriterien, Qualität und Risiken.
+    responsibilities:
+      - Review, Tests, Gegenchecks
+      - Verbesserungsvorschläge
+    inputs:
+      - Artefakte, DoD
+    outputs:
+      - Review-Bericht, Freigabe/Änderungsbedarf
+
+  - id: backup
+    name: Backup-Agent
+    purpose: Führt automatische Sicherungen des Projekts in das konfigurierte GitHub-Repository durch.
+    responsibilities:
+      - Erkennung von Backup-Anfragen
+      - Git-Status prüfen und validieren
+      - Commits erstellen und zu GitHub pushen
+      - Fehlerbehandlung und Reporting
+    inputs:
+      - Backup-Anfrage vom Benutzer
+      - GitHub-Konfiguration
+    outputs:
+      - Backup-Status (Erfolg/Fehler)
+      - Commit-Hash und Timestamp
+      - Reporter mit Details
+
+

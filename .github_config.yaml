@@ -1,0 +1,20 @@
+# GitHub Backup Konfiguration
+# Diese Datei enthält die Einstellungen für automatische Backups zu GitHub
+
+# Repository URL (erforderlich)
+# SSH-URL für Authentifizierung mit SSH-Keys
+repository_url: git@github.com:TheRealSiliax/Website_v.0.1.git
+
+# Git-Benutzer-Konfiguration (optional, falls nicht global gesetzt)
+git_user_name: TheRealSiliax
+git_user_email: namyslo.termine@gmail.com
+
+# Standard-Branch (optional, Standard: main)
+default_branch: main
+
+# Hinweis: Diese Datei sollte NICHT sensible Daten wie Passwörter oder Tokens enthalten.
+# Für Authentifizierung verwende bitte:
+# - SSH-Keys (empfohlen)
+# - Git Credential Manager
+# - Personal Access Token (als Umgebungsvariable)
+
