@@ -140,6 +140,130 @@
             background-color: white;
         }
 
+        /* Search Component */
+        .nav__actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search__toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search__toggle:hover {
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .search__toggle svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .search__input-wrapper {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            background: rgba(10, 13, 46, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            overflow: hidden;
+            width: 0;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .search.active .search__input-wrapper {
+            width: 280px;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .search__input {
+            width: 100%;
+            padding: 0.65rem 1rem;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 0.9rem;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .search__input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .search__submit {
+            background: var(--color-primary);
+            border: none;
+            padding: 0.65rem 1rem;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .search__submit:hover {
+            background: var(--color-primary-dark);
+        }
+
+        .search__submit svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .search__close {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease;
+        }
+
+        .search__close:hover {
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .search.active .search__input-wrapper {
+                position: fixed;
+                top: 70px;
+                left: 1rem;
+                right: 1rem;
+                width: auto;
+                transform: none;
+                border-radius: 12px;
+            }
+        }
+
         /* ========================================
            HERO SECTION
            ======================================== */
@@ -712,11 +836,37 @@
                 <li><a href="chatbots.html">KI-Assistenten</a></li>
                 <li><a href="#contact">Kontakt</a></li>
             </ul>
-            <button class="nav__toggle" id="navToggle" aria-label="Menü öffnen">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+            <div class="nav__actions">
+                <!-- Search -->
+                <div class="search" id="search">
+                    <button class="search__toggle" id="searchToggle" aria-label="Suche öffnen">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="M21 21l-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                    <div class="search__input-wrapper">
+                        <input type="text" class="search__input" id="searchInput" placeholder="Website durchsuchen..." aria-label="Suchbegriff">
+                        <button class="search__close" id="searchClose" aria-label="Suche schließen">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                <path d="M18 6L6 18M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                        <button class="search__submit" type="submit" aria-label="Suchen">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="M21 21l-4.35-4.35"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <!-- Mobile Menu Toggle -->
+                <button class="nav__toggle" id="navToggle" aria-label="Menü öffnen">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
         </nav>
     </header>
 
@@ -1463,6 +1613,66 @@
                 menu.classList.toggle('active');
             });
         }
+    })();
+
+    // ========================================
+    // SEARCH FUNCTIONALITY
+    // ========================================
+    (function() {
+        const search = document.getElementById('search');
+        const searchToggle = document.getElementById('searchToggle');
+        const searchInput = document.getElementById('searchInput');
+        const searchClose = document.getElementById('searchClose');
+
+        if (!search || !searchToggle || !searchInput) return;
+
+        // Toggle search open/close
+        searchToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            search.classList.add('active');
+            setTimeout(() => searchInput.focus(), 100);
+        });
+
+        // Close search
+        if (searchClose) {
+            searchClose.addEventListener('click', (e) => {
+                e.preventDefault();
+                search.classList.remove('active');
+                searchInput.value = '';
+            });
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && search.classList.contains('active')) {
+                search.classList.remove('active');
+                searchInput.value = '';
+            }
+        });
+
+        // Handle search submit
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const query = searchInput.value.trim();
+                if (query) {
+                    // For now, show an alert - later integrate with actual search
+                    alert('Suche nach: "' + query + '"\n\nDiese Funktion wird bald verfügbar sein!');
+                    search.classList.remove('active');
+                    searchInput.value = '';
+                }
+            }
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (search.classList.contains('active') && !search.contains(e.target)) {
+                search.classList.remove('active');
+                searchInput.value = '';
+            }
+        });
+
+        console.log('Search initialized');
     })();
     </script>
 </body>
